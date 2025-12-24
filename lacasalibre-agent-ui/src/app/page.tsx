@@ -27,9 +27,22 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [threadId, setThreadId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [expandedSteps, setExpandedSteps] = useState<Set<number>>(new Set());
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const traceEndRef = useRef<HTMLDivElement>(null);
+
+  const toggleStep = (idx: number) => {
+    setExpandedSteps(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(idx)) {
+        newSet.delete(idx);
+      } else {
+        newSet.add(idx);
+      }
+      return newSet;
+    });
+  };
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -238,23 +251,33 @@ export default function Home() {
                 Execution trace will appear here
               </div>
             ) : (
-              trace.map((event, idx) => (
-                <div key={idx} className={`trace-event ${event.type}`}>
-                  <div className="trace-header">
-                    <span className="trace-step">Step {event.step}</span>
-                    <span className={`trace-badge ${event.type}`}>
-                      {event.type}
-                    </span>
-                    {event.toolName && (
-                      <span style={{ fontSize: '0.8rem', color: '#666' }}>
-                        {event.toolName}
+              trace.map((event, idx) => {
+                const isExpanded = expandedSteps.has(idx);
+                return (
+                  <div key={idx} className={`trace-event ${event.type}`}>
+                    <div className="trace-header" onClick={() => toggleStep(idx)} style={{ cursor: 'pointer' }}>
+                      <span className="trace-expand-icon">
+                        {isExpanded ? '▼' : '▶'}
                       </span>
+                      <span className="trace-step">Step {event.step}</span>
+                      <span className={`trace-badge ${event.type}`}>
+                        {event.type}
+                      </span>
+                      {event.toolName && (
+                        <span style={{ fontSize: '0.8rem', color: '#666' }}>
+                          {event.toolName}
+                        </span>
+                      )}
+                    </div>
+                    {isExpanded && (
+                      <>
+                        <div className="trace-content">{event.content}</div>
+                        {renderTraceData(event)}
+                      </>
                     )}
                   </div>
-                  <div className="trace-content">{event.content}</div>
-                  {renderTraceData(event)}
-                </div>
-              ))
+                );
+              })
             )}
             <div ref={traceEndRef} />
           </div>

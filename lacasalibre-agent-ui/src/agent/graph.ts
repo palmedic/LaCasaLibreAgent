@@ -47,7 +47,18 @@ function shouldContinue(state: typeof MessagesAnnotation.State) {
 async function callModel(state: typeof MessagesAnnotation.State) {
   const messages = state.messages;
   const messagesWithContext = ensureSystemMessage(messages);
+
+  console.log('[Agent] Invoking model with', messagesWithContext.length, 'messages');
   const response = await model.invoke(messagesWithContext);
+
+  const aiMsg = response as AIMessage;
+  if (aiMsg.tool_calls && aiMsg.tool_calls.length > 0) {
+    console.log('[Agent] Model requested', aiMsg.tool_calls.length, 'tool calls:',
+      aiMsg.tool_calls.map(tc => tc.name));
+  } else {
+    console.log('[Agent] Model responded without tool calls');
+  }
+
   return { messages: [response] };
 }
 
