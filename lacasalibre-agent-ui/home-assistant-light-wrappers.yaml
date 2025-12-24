@@ -1,0 +1,144 @@
+# Home Assistant Light Wrappers
+# This configuration exposes switch entities as lights for better semantic control
+# Add this to your Home Assistant configuration.yaml file:
+#
+# light:
+#   - platform: switch
+#     ...
+#
+# After adding, restart Home Assistant for changes to take effect.
+
+light:
+  # Kitchen
+  - platform: switch
+    name: Kitchen Ceiling Light
+    entity_id: switch.kitchen
+
+  # Dining Room
+  - platform: switch
+    name: Dining Room Light
+    entity_id: switch.dinning_light
+
+  # Living Room / Kamma
+  - platform: switch
+    name: Kamma Light
+    entity_id: switch.kamma_light
+
+  # Master Bedroom
+  - platform: switch
+    name: Master Bedroom Light
+    entity_id: switch.master_bedroom
+
+  # Master Bathroom
+  - platform: switch
+    name: Master Bathroom Light
+    entity_id: switch.master_bathroom
+
+  # Kids Bathroom
+  - platform: switch
+    name: Kids Bathroom Light
+    entity_id: switch.kids_bath
+
+  # Work Room / Home Office
+  - platform: switch
+    name: Home Office Light
+    entity_id: switch.work_room
+
+  # Entrance
+  - platform: switch
+    name: Entrance Light
+    entity_id: switch.entrance
+
+  # Hallway
+  - platform: switch
+    name: Hallway Light
+    entity_id: switch.hallway
+
+  # Porch / Outdoor
+  - platform: switch
+    name: Porch 1 Light
+    entity_id: switch.porch_1
+
+  - platform: switch
+    name: Porch 2 Light
+    entity_id: switch.porch_2
+
+  - platform: switch
+    name: Porch Main Light
+    entity_id: switch.porch_light
+
+# EXCLUDED SWITCHES (not lights):
+#
+# Boiler:
+#   - switch.boiler (heating system)
+#
+# Shutters:
+#   - (none found - shutters are probably in cover domain)
+#
+# Appliance Features (dishwasher, oven, refrigerator):
+#   - switch.dishwasher_* (various dishwasher modes)
+#   - switch.oven_* (oven settings)
+#   - switch.refrigerator_* (fridge settings)
+#   - switch.coffee (coffee maker)
+#
+# Robot Vacuum (Marcel):
+#   - switch.marcel_* (robot vacuum features)
+#
+# Audio/Video Equipment:
+#   - switch.*_crossfade
+#   - switch.*_loudness
+#   - switch.*_surround_*
+#   - switch.*_speech_enhancement
+#   - switch.light_sensor_65_the_frame (TV light sensor)
+#
+# Security Camera (Porch):
+#   - switch.porch_audio_recording
+#   - switch.porch_camera_enabled
+#   - switch.porch_microphone
+#   - switch.porch_motion_detection*
+#   - switch.porch_speaker
+#   - switch.porch_status_led
+#   - switch.porch_light_enable (camera light automation, not the actual light)
+
+# INSTALLATION INSTRUCTIONS:
+#
+# 1. Copy the light: section above to your Home Assistant configuration.yaml
+#
+# 2. Or create a separate file (e.g., lights.yaml) and include it:
+#    # In configuration.yaml:
+#    light: !include lights.yaml
+#
+# 3. Check your configuration:
+#    - Go to Developer Tools → YAML
+#    - Click "Check Configuration"
+#    - Fix any errors if they appear
+#
+# 4. Restart Home Assistant:
+#    - Go to Developer Tools → YAML
+#    - Click "Restart" under "Server management"
+#    - Wait for restart to complete
+#
+# 5. Verify the new light entities:
+#    - Go to Developer Tools → States
+#    - Filter by "light."
+#    - You should see all new light.* entities
+#
+# RESULT:
+# After this configuration, you'll have:
+#   - light.kitchen_ceiling_light (controls switch.kitchen)
+#   - light.dining_room_light (controls switch.dinning_light)
+#   - light.kamma_light (controls switch.kamma_light)
+#   - light.master_bedroom_light (controls switch.master_bedroom)
+#   - light.master_bathroom_light (controls switch.master_bathroom)
+#   - light.kids_bathroom_light (controls switch.kids_bath)
+#   - light.home_office_light (controls switch.work_room)
+#   - light.entrance_light (controls switch.entrance)
+#   - light.hallway_light (controls switch.hallway)
+#   - light.porch_1_light (controls switch.porch_1)
+#   - light.porch_2_light (controls switch.porch_2)
+#   - light.porch_main_light (controls switch.porch_light)
+#
+# These will all show up in the "light" domain and work with commands like:
+#   - "Turn on the kitchen light"
+#   - "Turn off all lights"
+#   - "What lights are on?"
