@@ -42,7 +42,9 @@ export async function searchSpotify(
   console.log(`[Spotify] Searching for "${query}" (type: ${type})`);
 
   try {
-    const results = await spotify.search(query, [type], undefined, limit);
+    // Spotify SDK requires specific limit values, default to 10
+    const validLimit = (limit <= 50 && limit >= 1) ? limit : 10;
+    const results = await spotify.search(query, [type], undefined, validLimit as 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10);
 
     if (type === 'track' && results.tracks) {
       const tracks: SpotifyTrack[] = results.tracks.items.map(track => ({
@@ -103,10 +105,12 @@ export async function searchSpotify(
       const tracks: SpotifyTrack[] = playlistTracks.items
         .filter(item => item.track && 'uri' in item.track)
         .map(item => {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           const track = item.track as any;
           return {
             id: track.id,
             name: track.name,
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             artists: track.artists.map((a: any) => a.name),
             album: track.album?.name || '',
             uri: track.uri,

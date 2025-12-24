@@ -79,7 +79,6 @@ export default function Home() {
       }
 
       let buffer = '';
-      let finalReply = '';
 
       while (true) {
         const { done, value } = await reader.read();
@@ -95,11 +94,10 @@ export default function Home() {
             const data = JSON.parse(line.slice(6));
 
             if (data.type === 'DONE') {
-              // Update thread ID and final reply
+              // Update thread ID
               if (data.threadId && !threadId) {
                 setThreadId(data.threadId);
               }
-              finalReply = data.reply;
 
               // Add assistant response to messages
               setMessages((prev) => [

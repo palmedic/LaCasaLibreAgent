@@ -18,7 +18,9 @@
       "Bash(git branch:*)",
       "Bash(git fetch:*)",
       "Bash(lsof:*)",
-      "Bash(xargs kill:*)"
+      "Bash(xargs kill:*)",
+      "Bash(chmod:*)",
+      "Bash(npm run lint)"
     ]
   }
 }
