@@ -7,6 +7,9 @@ export const env = {
   OPENAI_API_KEY: process.env.OPENAI_API_KEY || '',
   HOME_ASSISTANT_BASE_URL: process.env.HOME_ASSISTANT_BASE_URL || '',
   HOME_ASSISTANT_TOKEN: process.env.HOME_ASSISTANT_TOKEN || '',
+  SPOTIFY_CLIENT_ID: process.env.SPOTIFY_CLIENT_ID || '',
+  SPOTIFY_CLIENT_SECRET: process.env.SPOTIFY_CLIENT_SECRET || '',
+  SPOTIFY_REDIRECT_URI: process.env.SPOTIFY_REDIRECT_URI || '',
 };
 
 // Validate required environment variables
@@ -21,6 +24,15 @@ export function validateEnv() {
   }
   if (!env.HOME_ASSISTANT_TOKEN) {
     missing.push('HOME_ASSISTANT_TOKEN');
+  }
+  if (!env.SPOTIFY_CLIENT_ID) {
+    missing.push('SPOTIFY_CLIENT_ID');
+  }
+  if (!env.SPOTIFY_CLIENT_SECRET) {
+    missing.push('SPOTIFY_CLIENT_SECRET');
+  }
+  if (!env.SPOTIFY_REDIRECT_URI) {
+    missing.push('SPOTIFY_REDIRECT_URI');
   }
 
   if (missing.length > 0) {

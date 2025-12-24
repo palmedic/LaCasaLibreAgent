@@ -2,6 +2,7 @@ import { tool } from '@langchain/core/tools';
 import { z } from 'zod';
 import { haClient } from '@/ha/client';
 import { isEntityAllowed, isServiceAllowed } from '@/config/allowlist';
+import { searchSpotify } from '@/spotify/client';
 
 // Tool 1: Get entity state
 export const haGetEntityStateTool = tool(
@@ -214,9 +215,119 @@ export const haSmartSearchTool = tool(
   }
 );
 
+// Tool 5: Play Spotify music on Home Assistant speakers
+export const haPlaySpotifyTool = tool(
+  async ({ query, speaker_entity_id, search_type }) => {
+    try {
+      console.log(`[ha_play_spotify] Searching Spotify for: "${query}" (type: ${search_type})`);
+
+      // Search Spotify
+      const searchResults = await searchSpotify(query, search_type || 'track', 5);
+
+      if (searchResults.tracks.length === 0) {
+        return JSON.stringify({
+          success: false,
+          error: `No results found for "${query}"`,
+        });
+      }
+
+      // Get the best match (first result)
+      const track = searchResults.tracks[0];
+      console.log(`[ha_play_spotify] Found: "${track.name}" by ${track.artists.join(', ')}`);
+
+      // Determine speaker entity
+      let targetSpeaker = speaker_entity_id;
+
+      // If no speaker specified, try to find a default one
+      if (!targetSpeaker) {
+        // Try to find Living Room speaker first (likely Sonos Beam)
+        const allEntities = await haClient.listAllEntities();
+        const mediaPlayers = allEntities.filter(e => e.entity_id.startsWith('media_player.'));
+
+        // Prefer Living Room or first available media player
+        const defaultSpeaker = mediaPlayers.find(e => {
+          const friendlyName = e.attributes.friendly_name;
+          return e.entity_id.includes('living_room') ||
+            (typeof friendlyName === 'string' && friendlyName.toLowerCase().includes('living room'));
+        }) || mediaPlayers[0];
+
+        if (!defaultSpeaker) {
+          return JSON.stringify({
+            success: false,
+            error: 'No media player found. Please specify a speaker_entity_id.',
+          });
+        }
+
+        targetSpeaker = defaultSpeaker.entity_id;
+        console.log(`[ha_play_spotify] Using default speaker: ${targetSpeaker}`);
+      }
+
+      // Check allowlist
+      if (!isServiceAllowed('media_player', 'play_media')) {
+        throw new Error('Service media_player.play_media is not in the allowlist');
+      }
+
+      // Play on Home Assistant media player using Spotify URI
+      const serviceData = {
+        entity_id: targetSpeaker,
+        media_content_type: 'music',
+        media_content_id: track.uri,
+      };
+
+      console.log(`[ha_play_spotify] Playing on ${targetSpeaker}: ${track.uri}`);
+
+      await haClient.callService('media_player', 'play_media', serviceData);
+
+      return JSON.stringify({
+        success: true,
+        track: {
+          name: track.name,
+          artists: track.artists,
+          album: track.album,
+          uri: track.uri,
+        },
+        speaker: targetSpeaker,
+        message: `Now playing "${track.name}" by ${track.artists.join(', ')} on ${targetSpeaker}`,
+      });
+
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      console.error('[ha_play_spotify] Error:', message);
+      return JSON.stringify({
+        success: false,
+        error: `Failed to play music: ${message}`,
+      });
+    }
+  },
+  {
+    name: 'ha_play_spotify',
+    description:
+      'Search Spotify and play music on a Home Assistant speaker. ' +
+      'Searches for songs, artists, albums, or playlists and plays the best match. ' +
+      'Works with Sonos, Chromecast, and other media players integrated with Home Assistant. ' +
+      'Examples: "play some jazz", "play Coldplay", "play chill music"',
+    schema: z.object({
+      query: z
+        .string()
+        .describe('Natural language music search query (e.g., "play some jazz", "Coldplay", "relaxing music")'),
+      speaker_entity_id: z
+        .string()
+        .optional()
+        .nullable()
+        .describe('Optional: Specific speaker entity ID (e.g., "media_player.living_room"). If not specified, uses default speaker.'),
+      search_type: z
+        .enum(['track', 'artist', 'album', 'playlist'])
+        .optional()
+        .nullable()
+        .describe('Optional: Type of search - track (default), artist, album, or playlist'),
+    }),
+  }
+);
+
 export const homeAssistantTools = [
   haSmartSearchTool,
   haListEntitiesTool,
   haGetEntityStateTool,
   haCallServiceTool,
+  haPlaySpotifyTool,
 ];
