@@ -324,10 +324,81 @@ export const haPlaySpotifyTool = tool(
   }
 );
 
+// Tool 6: Get weather information
+export const haGetWeatherTool = tool(
+  async () => {
+    try {
+      // Find weather entities
+      const allEntities = await haClient.listAllEntities();
+      const weatherEntities = allEntities.filter(e => e.entity_id.startsWith('weather.'));
+
+      if (weatherEntities.length === 0) {
+        return JSON.stringify({
+          success: false,
+          error: 'No weather entities found in Home Assistant',
+        });
+      }
+
+      // Get the first weather entity (usually the primary one)
+      const weatherEntity = weatherEntities[0];
+      const state = weatherEntity.state;
+      const attrs = weatherEntity.attributes;
+
+      // Extract relevant weather data
+      const weatherData = {
+        condition: state,
+        temperature: attrs.temperature,
+        temperature_unit: attrs.temperature_unit,
+        humidity: attrs.humidity,
+        pressure: attrs.pressure,
+        pressure_unit: attrs.pressure_unit || 'hPa',
+        wind_speed: attrs.wind_speed,
+        wind_speed_unit: attrs.wind_speed_unit || 'km/h',
+        wind_bearing: attrs.wind_bearing,
+        visibility: attrs.visibility,
+        visibility_unit: attrs.visibility_unit || 'km',
+        forecast: attrs.forecast ? (attrs.forecast as Array<{
+          datetime: string;
+          condition: string;
+          temperature?: number;
+          templow?: number;
+          precipitation?: number;
+          precipitation_probability?: number;
+        }>).slice(0, 5) : [], // Limit to next 5 forecast periods
+        attribution: attrs.attribution,
+        friendly_name: attrs.friendly_name,
+      };
+
+      return JSON.stringify({
+        success: true,
+        entity_id: weatherEntity.entity_id,
+        weather: weatherData,
+      });
+
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      console.error('[ha_get_weather] Error:', message);
+      return JSON.stringify({
+        success: false,
+        error: `Failed to get weather: ${message}`,
+      });
+    }
+  },
+  {
+    name: 'ha_get_weather',
+    description:
+      'Get current weather conditions and forecast from Home Assistant. ' +
+      'Returns temperature, humidity, pressure, wind speed/direction, visibility, current conditions, and upcoming forecast. ' +
+      'Use this to answer questions about the weather, temperature, or forecast.',
+    schema: z.object({}),
+  }
+);
+
 export const homeAssistantTools = [
   haSmartSearchTool,
   haListEntitiesTool,
   haGetEntityStateTool,
   haCallServiceTool,
   haPlaySpotifyTool,
+  haGetWeatherTool,
 ];
