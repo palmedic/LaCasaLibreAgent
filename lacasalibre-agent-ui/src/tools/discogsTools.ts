@@ -1,6 +1,6 @@
 import { tool } from '@langchain/core/tools';
 import { z } from 'zod';
-import { discogsClient } from './client';
+import { discogsClient } from '@/discogs/client';
 
 // Tool 1: Search user's vinyl collection
 export const discogsSearchCollectionTool = tool(
