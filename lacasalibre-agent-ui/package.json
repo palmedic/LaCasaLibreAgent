@@ -6,12 +6,15 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "test:memory": "tsx src/memory/test-memory.ts",
+    "test:pinecone": "tsx src/memory/simple-test.ts"
   },
   "dependencies": {
     "@langchain/core": "^0.3.0",
     "@langchain/langgraph": "^0.2.0",
     "@langchain/openai": "^0.3.0",
+    "@pinecone-database/pinecone": "^6.1.3",
     "@spotify/web-api-ts-sdk": "^1.2.0",
     "dotenv": "^16.4.0",
     "langchain": "^0.3.0",
@@ -27,6 +30,7 @@
     "@types/react-dom": "^19.0.0",
     "eslint": "^9.17.0",
     "eslint-config-next": "^15.1.0",
+    "tsx": "^4.21.0",
     "typescript": "^5.7.0"
   }
 }

@@ -13,6 +13,8 @@ export const env = {
   DISCOGS_API_KEY: process.env.DISCOGS_API_KEY || '',
   DISCOGS_USERNAME: process.env.DISCOGS_USERNAME || '',
   DISCOGS_USER_AGENT: process.env.DISCOGS_USER_AGENT || 'LaCasaLibreAgent/1.0',
+  PINECONE_API_KEY: process.env.PINECONE_API_KEY || '',
+  PINECONE_INDEX_NAME: process.env.PINECONE_INDEX_NAME || 'lacasalibre-user-memory',
 };
 
 // Validate required environment variables
