@@ -218,7 +218,6 @@ export default function Home() {
           className="logo"
           priority
         />
-        <h1>Dr. House</h1>
       </header>
 
       <main className="main">
@@ -228,10 +227,17 @@ export default function Home() {
             <h2>Conversation</h2>
           </div>
 
-          <div className="messages">
+          <div className={`messages ${messages.length === 0 ? 'messages-empty' : ''}`}>
             {messages.length === 0 ? (
               <div className="empty-state">
-                How can I help you today?
+                <Image
+                  src="/LaCasaLibreLogo.png"
+                  alt="La Casa Libre"
+                  width={360}
+                  height={200}
+                  className="empty-state-logo"
+                  priority
+                />
               </div>
             ) : (
               messages.map((msg, idx) => (
