@@ -20,6 +20,23 @@ interface TraceEvent {
   messages?: Array<{ role: string; content: string }>;
 }
 
+// Format message content to fix numbered lists
+function formatMessageContent(content: string): string {
+  // Fix numbered lists that are on one line: "1. Item 2. Item 3. Item"
+  // Convert to proper line breaks: "1. Item\n2. Item\n3. Item"
+
+  // Pattern: digit(s) followed by period and space, but not at start of line
+  const numberedListPattern = /(\s+)(\d+\.\s+)/g;
+
+  // Replace inline numbered list items with line breaks
+  let formatted = content.replace(numberedListPattern, '\n$2');
+
+  // Clean up: if we created double line breaks, reduce to single
+  formatted = formatted.replace(/\n{3,}/g, '\n\n');
+
+  return formatted;
+}
+
 export default function Home() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [trace, setTrace] = useState<TraceEvent[]>([]);
@@ -210,7 +227,7 @@ export default function Home() {
             ) : (
               messages.map((msg, idx) => (
                 <div key={idx} className={`message ${msg.role}`}>
-                  {msg.content}
+                  {formatMessageContent(msg.content)}
                 </div>
               ))
             )}
