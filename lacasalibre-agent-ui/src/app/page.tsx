@@ -213,8 +213,8 @@ export default function Home() {
         <Image
           src="/LaCasaLibreLogo.png"
           alt="La Casa Libre"
-          width={189}
-          height={105}
+          width={108}
+          height={60}
           className="logo"
           priority
         />
