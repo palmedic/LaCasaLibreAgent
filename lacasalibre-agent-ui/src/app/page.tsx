@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect, FormEvent } from 'react';
+import Image from 'next/image';
 import './globals.css';
 
 interface Message {
@@ -209,7 +210,15 @@ export default function Home() {
   return (
     <div className="container">
       <header className="header">
-        <h1>La Casa Libre</h1>
+        <Image
+          src="/LaCasaLibreLogo.png"
+          alt="La Casa Libre"
+          width={120}
+          height={67}
+          className="logo"
+          priority
+        />
+        <h1>Home Agent</h1>
       </header>
 
       <main className="main">
