@@ -3,7 +3,7 @@ import { ToolNode } from '@langchain/langgraph/prebuilt';
 import { ChatOpenAI } from '@langchain/openai';
 import { AIMessage, BaseMessage, SystemMessage } from '@langchain/core/messages';
 import { homeAssistantTools } from '@/tools/haTools';
-import { discogsTools } from '@/discogs/tools';
+import { discogsTools } from '@/tools/discogsTools';
 import { AgentTracer } from './tracing';
 import { validateEnv } from '@/config/env';
 import { HOUSE_SYSTEM_MESSAGE } from '@/config/houseContext';

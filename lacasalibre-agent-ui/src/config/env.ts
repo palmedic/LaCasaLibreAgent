@@ -37,12 +37,7 @@ export function validateEnv() {
   if (!env.SPOTIFY_REDIRECT_URI) {
     missing.push('SPOTIFY_REDIRECT_URI');
   }
-  if (!env.DISCOGS_API_KEY) {
-    missing.push('DISCOGS_API_KEY');
-  }
-  if (!env.DISCOGS_USERNAME) {
-    missing.push('DISCOGS_USERNAME');
-  }
+  // Note: Discogs variables are optional - validated when Discogs client is used
 
   if (missing.length > 0) {
     throw new Error(

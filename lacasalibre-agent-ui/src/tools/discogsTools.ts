@@ -9,7 +9,7 @@ export const discogsSearchCollectionTool = tool(
       console.log(`[discogs_search_collection] Searching for: "${query}"`);
 
       const results = await discogsClient.searchCollection(query, {
-        per_page: limit || 10,
+        per_page: limit || 1000,
         sort: 'artist',
         sort_order: 'asc',
       });
