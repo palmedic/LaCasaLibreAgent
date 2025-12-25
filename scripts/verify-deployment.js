@@ -11,7 +11,9 @@ const https = require('https');
 const { execSync } = require('child_process');
 
 // Configuration
-const PROJECT_NAME = 'lacasalibre-agent-ui';
+const PROJECT_NAME = 'la-casa-libre-agent';
+const PROJECT_ID = 'prj_XENFv3oP38wt4IEBE654bWn8dCMN';
+const PRODUCTION_DOMAIN = 'chat.lacasalibre.com'; // Custom production domain
 const VERCEL_API = 'https://api.vercel.com';
 const VERCEL_TOKEN = process.env.VERCEL_TOKEN;
 
@@ -66,7 +68,7 @@ async function getLatestDeployment() {
 
   try {
     // Get project deployments
-    const response = await makeRequest(`/v6/deployments?projectId=${PROJECT_NAME}&limit=1`);
+    const response = await makeRequest(`/v6/deployments?projectId=${PROJECT_ID}&limit=1`);
 
     if (!response.deployments || response.deployments.length === 0) {
       log('❌ No deployments found', 'red');
@@ -81,7 +83,7 @@ async function getLatestDeployment() {
 }
 
 async function checkDeploymentStatus(deployment) {
-  const { uid, url, state, readyState } = deployment;
+  const { uid, url, state, readyState, alias } = deployment;
 
   log(`\n📦 Deployment: ${url}`, 'blue');
   log(`   State: ${state}`, 'gray');
@@ -91,16 +93,20 @@ async function checkDeploymentStatus(deployment) {
   if (readyState === 'READY') {
     log('✅ Deployment is READY', 'green');
 
+    // Use production domain for health check
+    const testUrl = PRODUCTION_DOMAIN;
+
     // Test the URL
     return new Promise((resolve) => {
-      https.get(`https://${url}`, (res) => {
+      https.get(`https://${testUrl}`, (res) => {
         if (res.statusCode === 200) {
           log(`✅ Health check passed (HTTP ${res.statusCode})`, 'green');
           log(`\n🎉 Deployment verified successfully!`, 'green');
-          log(`   Visit: https://${url}\n`, 'blue');
+          log(`   Visit: https://${testUrl}\n`, 'blue');
           resolve(true);
         } else {
           log(`⚠️  Warning: Site returned HTTP ${res.statusCode}`, 'yellow');
+          log(`   Try: https://${testUrl}\n`, 'blue');
           resolve(false);
         }
       }).on('error', () => {
