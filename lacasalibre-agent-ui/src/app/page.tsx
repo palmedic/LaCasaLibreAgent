@@ -209,17 +209,6 @@ export default function Home() {
 
   return (
     <div className="container">
-      <header className="header">
-        <Image
-          src="/LaCasaLibreLogo.png"
-          alt="La Casa Libre"
-          width={108}
-          height={60}
-          className="logo"
-          priority
-        />
-      </header>
-
       <main className="main">
         {/* Chat Panel */}
         <div className="chat-panel">
