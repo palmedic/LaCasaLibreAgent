@@ -1,0 +1,11 @@
+{
+  "name": "lacasalibre-agent",
+  "version": "1.0.0",
+  "description": "La Casa Libre Home Agent",
+  "scripts": {
+    "verify-deployment": "node scripts/verify-deployment.js",
+    "push": "git push && npm run verify-deployment"
+  },
+  "devDependencies": {},
+  "private": true
+}
