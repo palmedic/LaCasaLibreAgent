@@ -218,7 +218,7 @@ export default function Home() {
           className="logo"
           priority
         />
-        <h1>Home Agent</h1>
+        <h1>Dr. House</h1>
       </header>
 
       <main className="main">
