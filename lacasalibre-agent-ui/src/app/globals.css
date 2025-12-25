@@ -36,8 +36,9 @@ body {
 }
 
 .logo {
-  height: 48px;
+  height: auto;
   width: auto;
+  max-height: 150px;
 }
 
 .header h1 {
