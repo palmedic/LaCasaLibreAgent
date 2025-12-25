@@ -294,3 +294,138 @@ body {
   margin: 1rem;
   border: 1px solid #f5c6cb;
 }
+
+/* Mobile responsive styles */
+@media (max-width: 768px) {
+  .header {
+    padding: 0.75rem 1rem;
+  }
+
+  .header h1 {
+    font-size: 1.25rem;
+  }
+
+  .main {
+    flex-direction: column;
+    padding: 0.5rem;
+    gap: 0.5rem;
+  }
+
+  .chat-panel,
+  .trace-panel {
+    min-width: unset;
+    min-height: 50vh;
+  }
+
+  .panel-header {
+    padding: 0.75rem 1rem;
+  }
+
+  .panel-header h2 {
+    font-size: 1rem;
+  }
+
+  .messages {
+    padding: 1rem;
+  }
+
+  .message {
+    max-width: 90%;
+    font-size: 0.9rem;
+  }
+
+  .trace-list {
+    padding: 0.75rem;
+  }
+
+  .trace-event {
+    padding: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .trace-header {
+    gap: 0.25rem;
+    flex-wrap: wrap;
+  }
+
+  .trace-step {
+    font-size: 0.7rem;
+  }
+
+  .trace-badge {
+    font-size: 0.65rem;
+    padding: 0.15rem 0.4rem;
+  }
+
+  .trace-content {
+    font-size: 0.8rem;
+  }
+
+  .trace-data {
+    font-size: 0.75rem;
+    padding: 0.4rem;
+  }
+
+  .input-area {
+    padding: 0.75rem 1rem;
+  }
+
+  .input-form {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .input-field {
+    padding: 0.625rem 0.875rem;
+    font-size: 0.9rem;
+  }
+
+  .send-button {
+    padding: 0.625rem 1rem;
+    font-size: 0.9rem;
+    width: 100%;
+  }
+
+  .empty-state {
+    font-size: 0.85rem;
+    padding: 1.5rem;
+  }
+}
+
+/* Very small mobile devices */
+@media (max-width: 480px) {
+  .container {
+    height: 100dvh; /* Use dynamic viewport height on mobile */
+  }
+
+  .header h1 {
+    font-size: 1.1rem;
+  }
+
+  .main {
+    padding: 0.25rem;
+  }
+
+  .chat-panel,
+  .trace-panel {
+    border-radius: 6px;
+  }
+
+  .message {
+    max-width: 95%;
+    padding: 0.625rem 0.875rem;
+    font-size: 0.85rem;
+  }
+
+  .trace-header {
+    font-size: 0.65rem;
+  }
+
+  .trace-content {
+    font-size: 0.75rem;
+  }
+
+  .trace-data {
+    font-size: 0.7rem;
+  }
+}
