@@ -3,6 +3,7 @@ import { ToolNode } from '@langchain/langgraph/prebuilt';
 import { ChatOpenAI } from '@langchain/openai';
 import { AIMessage, BaseMessage, SystemMessage } from '@langchain/core/messages';
 import { homeAssistantTools } from '@/tools/haTools';
+import { discogsTools } from '@/discogs/tools';
 import { AgentTracer } from './tracing';
 import { validateEnv } from '@/config/env';
 import { HOUSE_SYSTEM_MESSAGE } from '@/config/houseContext';
@@ -23,12 +24,15 @@ function ensureSystemMessage(messages: BaseMessage[]): BaseMessage[] {
   return [new SystemMessage(HOUSE_SYSTEM_MESSAGE), ...messages];
 }
 
+// Combine all tools
+const allTools = [...homeAssistantTools, ...discogsTools];
+
 // Initialize the model with tools
 const model = new ChatOpenAI({
   modelName: 'gpt-4o',
   temperature: 0,
   openAIApiKey: env.OPENAI_API_KEY,
-}).bindTools(homeAssistantTools);
+}).bindTools(allTools);
 
 // Define the function that determines whether to continue or end
 function shouldContinue(state: typeof MessagesAnnotation.State) {
@@ -65,7 +69,7 @@ async function callModel(state: typeof MessagesAnnotation.State) {
 // Build the graph
 const workflow = new StateGraph(MessagesAnnotation)
   .addNode('agent', callModel)
-  .addNode('tools', new ToolNode(homeAssistantTools))
+  .addNode('tools', new ToolNode(allTools))
   .addEdge(START, 'agent')
   .addConditionalEdges('agent', shouldContinue, {
     tools: 'tools',

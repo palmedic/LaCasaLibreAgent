@@ -10,6 +10,9 @@ export const env = {
   SPOTIFY_CLIENT_ID: process.env.SPOTIFY_CLIENT_ID || '',
   SPOTIFY_CLIENT_SECRET: process.env.SPOTIFY_CLIENT_SECRET || '',
   SPOTIFY_REDIRECT_URI: process.env.SPOTIFY_REDIRECT_URI || '',
+  DISCOGS_API_KEY: process.env.DISCOGS_API_KEY || '',
+  DISCOGS_USERNAME: process.env.DISCOGS_USERNAME || '',
+  DISCOGS_USER_AGENT: process.env.DISCOGS_USER_AGENT || 'LaCasaLibreAgent/1.0',
 };
 
 // Validate required environment variables
@@ -33,6 +36,12 @@ export function validateEnv() {
   }
   if (!env.SPOTIFY_REDIRECT_URI) {
     missing.push('SPOTIFY_REDIRECT_URI');
+  }
+  if (!env.DISCOGS_API_KEY) {
+    missing.push('DISCOGS_API_KEY');
+  }
+  if (!env.DISCOGS_USERNAME) {
+    missing.push('DISCOGS_USERNAME');
   }
 
   if (missing.length > 0) {
