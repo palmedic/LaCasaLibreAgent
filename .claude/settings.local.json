@@ -23,7 +23,8 @@
       "Bash(npm run lint)",
       "Bash(git config:*)",
       "Bash(git remote set-url:*)",
-      "Bash(cat:*)"
+      "Bash(cat:*)",
+      "Bash(git clone:*)"
     ]
   }
 }

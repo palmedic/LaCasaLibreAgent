@@ -105,12 +105,10 @@ export class DiscogsClient {
   }
 
   /**
-   * Search user's vinyl collection
-   * @param query - Search query (artist, album, label)
-   * @param options - Search options (sort, pagination, etc.)
+   * Get items from user's vinyl collection folder
+   * @param options - Retrieval options (sort, pagination, etc.)
    */
-  async searchCollection(
-    query: string,
+  async getCollectionItems(
     options?: {
       sort?: 'artist' | 'title' | 'year' | 'added';
       sort_order?: 'asc' | 'desc';
@@ -119,7 +117,6 @@ export class DiscogsClient {
     }
   ): Promise<DiscogsCollectionResponse> {
     const params = new URLSearchParams();
-    params.append('q', query);
 
     if (options?.sort) {
       params.append('sort', options.sort);
@@ -128,7 +125,8 @@ export class DiscogsClient {
       params.append('sort_order', options.sort_order);
     }
     if (options?.per_page) {
-      params.append('per_page', String(options.per_page));
+      // Discogs API max is 100 per page
+      params.append('per_page', String(Math.min(options.per_page, 100)));
     }
     if (options?.page) {
       params.append('page', String(options.page));
@@ -136,7 +134,7 @@ export class DiscogsClient {
 
     const url = `${this.baseUrl}/users/${this.username}/collection/folders/0/releases?${params.toString()}`;
 
-    console.log(`[DiscogsClient] Searching collection: ${query}`);
+    console.log(`[DiscogsClient] Getting collection items (page ${options?.page || 1})`);
 
     const response = await fetch(url, {
       method: 'GET',

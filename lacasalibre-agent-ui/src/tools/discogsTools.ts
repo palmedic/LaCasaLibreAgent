@@ -1,6 +1,22 @@
 import { tool } from '@langchain/core/tools';
 import { z } from 'zod';
-import { discogsClient } from '@/discogs/client';
+import { discogsClient, DiscogsRelease, DiscogsCollectionItem } from '@/discogs/client';
+
+// Helper function to check if a release matches the search query
+function matchesQuery(release: DiscogsRelease, query: string): boolean {
+  const searchTerms = query.toLowerCase().split(' ').filter(term => term.length > 0);
+  const searchableText = [
+    release.title,
+    release.artists.map(a => a.name).join(' '),
+    release.labels?.map(l => l.name).join(' ') || '',
+    release.genres?.join(' ') || '',
+    release.styles?.join(' ') || '',
+    release.year?.toString() || '',
+  ].join(' ').toLowerCase();
+
+  // All search terms must be found in the searchable text
+  return searchTerms.every(term => searchableText.includes(term));
+}
 
 // Tool 1: Search user's vinyl collection
 export const discogsSearchCollectionTool = tool(
@@ -8,13 +24,36 @@ export const discogsSearchCollectionTool = tool(
     try {
       console.log(`[discogs_search_collection] Searching for: "${query}"`);
 
-      const results = await discogsClient.searchCollection(query, {
-        per_page: limit || 1000,
-        sort: 'artist',
-        sort_order: 'asc',
-      });
+      // Fetch collection items with pagination (max 100 per page)
+      const allReleases: DiscogsCollectionItem[] = [];
+      let page = 1;
+      let hasMore = true;
 
-      if (results.releases.length === 0) {
+      while (hasMore && allReleases.length < 500) { // Safety limit of 500 items
+        const results = await discogsClient.getCollectionItems({
+          per_page: 100,
+          page,
+          sort: 'artist',
+          sort_order: 'asc',
+        });
+
+        allReleases.push(...results.releases);
+
+        // Check if there are more pages
+        hasMore = results.pagination.pages > page;
+        page++;
+      }
+
+      console.log(`[discogs_search_collection] Fetched ${allReleases.length} total items from collection`);
+
+      // Filter releases by query (client-side search)
+      const matchingReleases = allReleases.filter(item =>
+        matchesQuery(item.basic_information, query)
+      );
+
+      console.log(`[discogs_search_collection] Found ${matchingReleases.length} matches for "${query}"`);
+
+      if (matchingReleases.length === 0) {
         return JSON.stringify({
           success: false,
           message: `No records found in your collection matching "${query}"`,
@@ -24,11 +63,12 @@ export const discogsSearchCollectionTool = tool(
       }
 
       // Format results for LLM consumption
-      const formattedResults = results.releases.slice(0, limit || 10).map((item) => {
+      const maxResults = Math.min(matchingReleases.length, limit || 50);
+      const formattedResults = matchingReleases.slice(0, maxResults).map((item) => {
         const release = item.basic_information;
         return {
           title: release.title,
-          artist: release.artists.map((a) => a.name).join(', '),
+          artist: release.artists.map(a => a.name).join(', '),
           year: release.year,
           label: release.labels?.[0]?.name || 'Unknown',
           catalog_number: release.labels?.[0]?.catno || '',
@@ -43,9 +83,9 @@ export const discogsSearchCollectionTool = tool(
 
       return JSON.stringify({
         success: true,
-        total_found: results.pagination.items,
+        total_found: matchingReleases.length,
         results: formattedResults,
-        truncated: results.pagination.items > (limit || 10),
+        truncated: matchingReleases.length > maxResults,
       });
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
