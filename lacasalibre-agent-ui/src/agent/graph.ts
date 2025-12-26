@@ -16,12 +16,29 @@ function hasSystemMessage(messages: BaseMessage[]): boolean {
   return messages.length > 0 && messages[0]._getType() === 'system';
 }
 
-// Helper to prepend system message if needed
+// Helper to prepend system message if needed (with current time)
 function ensureSystemMessage(messages: BaseMessage[]): BaseMessage[] {
   if (hasSystemMessage(messages)) {
     return messages;
   }
-  return [new SystemMessage(HOUSE_SYSTEM_MESSAGE), ...messages];
+
+  // Add current time context to the system message
+  const now = new Date();
+  const timeString = now.toLocaleTimeString('en-US', {
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false
+  });
+  const dateString = now.toLocaleDateString('en-US', {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  });
+
+  const timeContext = `\n\nCURRENT TIME AND DATE:\n- Time: ${timeString} (24-hour format)\n- Date: ${dateString}\n- Hour: ${now.getHours()} (use this to determine if it's daytime 6-18 or nighttime 18-6)\n`;
+
+  return [new SystemMessage(HOUSE_SYSTEM_MESSAGE + timeContext), ...messages];
 }
 
 // Combine all tools

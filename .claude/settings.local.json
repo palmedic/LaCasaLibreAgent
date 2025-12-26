@@ -24,7 +24,13 @@
       "Bash(git config:*)",
       "Bash(git remote set-url:*)",
       "Bash(cat:*)",
-      "Bash(git clone:*)"
+      "Bash(git clone:*)",
+      "Bash(ls:*)",
+      "Bash(find:*)",
+      "Bash(git pull:*)",
+      "Bash(git stash:*)",
+      "Bash(git stash pop:*)",
+      "Bash(node:*)"
     ]
   }
 }
