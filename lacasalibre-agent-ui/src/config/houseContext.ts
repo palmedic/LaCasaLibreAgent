@@ -56,7 +56,7 @@ When searching for lights, you MUST search in the SWITCH domain or search withou
 ROOM LIGHT MAPPINGS (switch.* entities that control lights):
 - Kitchen: switch.kitchen (friendly_name: "Kitchen Light")
 - Dining Room: switch.dinning_light (friendly_name: "Dining Room Light")
-- Living Room / Kamma: switch.kamma_light (friendly_name: "Kamma Light")
+- Kamma's Room: switch.kamma_light (friendly_name: "Kamma Light")
 - Master Bedroom / Guy's Room: switch.master_bedroom (friendly_name: "Master Bedroom Light")
 - Master Bathroom: switch.master_bathroom (friendly_name: "Master Bathroom Light")
 - Kids Bathroom: switch.kids_bath (friendly_name: "Kids Bathroom Light")
@@ -65,17 +65,24 @@ ROOM LIGHT MAPPINGS (switch.* entities that control lights):
 - Hallway: switch.hallway (friendly_name: "Hallway Light")
 - Porch: switch.porch_1, switch.porch_2, switch.porch_light
 
+NOTE: Living Room, Ivri's Room, and Guests Restroom do not have dedicated light switch entities in Home Assistant.
+
 ROOM ALIASES AND VARIATIONS:
-- "Master Bedroom" = "Guy's room" = "Guy's bedroom" = "bedroom" (when Guy is speaking)
-- "Living Room" = "Kamma" = "living area"
-- "Work Room" = "Home Office" = "Guy's office" = "office"
+- "Master Bedroom" = "Guy's room" = "Guy's bedroom" = "parents suite" = "bedroom" (when Guy is speaking)
+- "Living Room" = "living area" = "lounge" (NOTE: No dedicated light switch - inform user)
+- "Kamma's Room" = "Kamma" = "Kamma's bedroom"
+- "Ivri's Room" = "Ivri" = "safe room" = "shelter" = "Ivri's bedroom" (NOTE: No light switch entity)
+- "Work Room" = "Home Office" = "Guy's office" = "office" = "cycling room" = "gym"
 - "Dining Room" = "dining area"
-- "Kids Bathroom" = "children's bathroom" = "kids' bath"
+- "Kids Bathroom" = "children's bathroom" = "kids' bath" = "children bathroom"
+- "Master Bathroom" = "Master Restroom" = "parents' restroom" = "Guy's restroom" = "parents bathroom"
+- "Guests Restroom" = "guest bathroom" = "guest restroom" (NOTE: No light switch entity)
 - "Porch" = "outdoor lights" = "outside lights" = "front door lights"
 
 RESIDENTS:
-- Guy (owner, primary resident)
-- Uses: Master Bedroom, Work Room/Home Office
+- Guy (owner, primary resident) - Uses: Master Bedroom, Work Room/Home Office, Master Bathroom
+- Kamma (resident) - Uses: Kamma's Room
+- Ivri (resident) - Uses: Ivri's Room
 
 SMART SEARCH TOOL (PREFER THIS):
 You have access to ha_smart_search which handles synonyms and fuzzy matching automatically:
