@@ -359,6 +359,47 @@ body {
   background: #d0d0d0;
 }
 
+/* Trace toggle button (hidden on desktop) */
+.trace-toggle-button {
+  display: none;
+  padding: 0.5rem 0.75rem;
+  background: #2c2c2c;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.trace-toggle-button:hover {
+  background: #1a1a1a;
+}
+
+.trace-toggle-button:active {
+  transform: scale(0.95);
+}
+
+/* Trace close button (hidden on desktop) */
+.trace-close-button {
+  display: none;
+  padding: 0.5rem;
+  background: transparent;
+  color: #666;
+  border: none;
+  font-size: 1.25rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  line-height: 1;
+}
+
+.trace-close-button:hover {
+  color: #2c2c2c;
+}
+
 /* Mobile responsive styles */
 @media (max-width: 768px) {
   html,
@@ -393,8 +434,32 @@ body {
     flex: 1;
   }
 
+  /* Show toggle button on mobile */
+  .trace-toggle-button {
+    display: flex;
+  }
+
+  /* Show close button on mobile */
+  .trace-close-button {
+    display: block;
+  }
+
+  /* Trace panel as overlay on mobile */
   .trace-panel {
-    display: none;
+    display: none; /* Hidden by default */
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1000;
+    background: white;
+    flex-direction: column;
+  }
+
+  /* Show trace panel when visible class is added */
+  .trace-panel-visible {
+    display: flex !important;
   }
 
   .chat-panel {
@@ -407,6 +472,9 @@ body {
   .panel-header {
     padding: 1rem 1.25rem;
     flex-shrink: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
   }
 
   .panel-header h2 {

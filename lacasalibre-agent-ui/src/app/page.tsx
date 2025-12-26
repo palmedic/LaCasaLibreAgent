@@ -46,6 +46,7 @@ export default function Home() {
   const [threadId, setThreadId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [expandedSteps, setExpandedSteps] = useState<Set<number>>(new Set());
+  const [showTrace, setShowTrace] = useState(false);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const traceEndRef = useRef<HTMLDivElement>(null);
@@ -214,6 +215,13 @@ export default function Home() {
         <div className="chat-panel">
           <div className="panel-header">
             <h2>Conversation</h2>
+            <button
+              className="trace-toggle-button"
+              onClick={() => setShowTrace(!showTrace)}
+              aria-label="Toggle execution trace"
+            >
+              {showTrace ? '✕' : '🔍'} Trace
+            </button>
           </div>
 
           <div className={`messages ${messages.length === 0 ? 'messages-empty' : ''}`}>
@@ -261,9 +269,16 @@ export default function Home() {
         </div>
 
         {/* Trace Panel */}
-        <div className="trace-panel">
+        <div className={`trace-panel ${showTrace ? 'trace-panel-visible' : ''}`}>
           <div className="panel-header">
             <h2>Execution Trace</h2>
+            <button
+              className="trace-close-button"
+              onClick={() => setShowTrace(false)}
+              aria-label="Close execution trace"
+            >
+              ✕
+            </button>
           </div>
 
           <div className="trace-list">
