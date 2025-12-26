@@ -30,7 +30,10 @@
       "Bash(git pull:*)",
       "Bash(git stash:*)",
       "Bash(git stash pop:*)",
-      "Bash(node:*)"
+      "Bash(node:*)",
+      "Bash(source .env)",
+      "Bash(*turns)",
+      "Bash(off switch.entrance*\" instead of actually calling the ha_call_service tool.\n\nROOT CAUSE: The system message examples showed the model ROLEPLAYING actions \nwith asterisks \\(*turns on switch.kitchen*\\) instead of demonstrating that tools \nshould be called FIRST, then responses given AFTER.\n\nFIX: Rewrote all examples to explicitly state:\n- \"CRITICAL: When you perform actions, you CALL THE ACTUAL TOOLS\"\n- \"Your sarcastic response comes AFTER the tool completes, NOT instead of calling the tool\"\n- Changed all examples from \"*turns on switch.kitchen*\" format to \n  \"Call ha_call_service, THEN respond: 'message'\"\n\nThis teaches the model that tool execution and text responses are separate steps,\nnot that it should narrate fake actions in its response text.\n\n🤖 Generated with [Claude Code]\\(https://claude.com/claude-code\\)\n\nCo-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>\nEOF\n\\)\")"
     ]
   }
 }
