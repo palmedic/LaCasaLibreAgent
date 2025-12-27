@@ -12,7 +12,7 @@ interface Message {
 
 interface TraceEvent {
   step: number;
-  type: 'USER' | 'ASSISTANT' | 'TOOL_CALL' | 'TOOL_RESULT' | 'ERROR' | 'LLM_PROMPT' | 'IMAGE';
+  type: 'USER' | 'ASSISTANT' | 'TOOL_CALL' | 'TOOL_RESULT' | 'ERROR' | 'LLM_PROMPT' | 'IMAGE' | 'CONFIG';
   timestamp: string;
   content: string;
   toolName?: string;
@@ -21,6 +21,7 @@ interface TraceEvent {
   error?: string;
   messages?: Array<{ role: string; content: string }>;
   imageData?: string; // Base64 image data for IMAGE events
+  config?: Record<string, unknown>; // Server config for CONFIG events
 }
 
 // Format message content to fix numbered lists
@@ -90,6 +91,30 @@ export default function Home() {
   useEffect(() => {
     scrollToBottom();
   }, [messages, trace]);
+
+  // Fetch server config on mount and display as initial trace event
+  useEffect(() => {
+    const fetchConfig = async () => {
+      try {
+        const response = await fetch('/api/config');
+        if (response.ok) {
+          const config = await response.json();
+          const configEvent: TraceEvent = {
+            step: 0,
+            type: 'CONFIG',
+            timestamp: new Date().toISOString(),
+            content: 'Server Configuration',
+            config,
+          };
+          setTrace([configEvent]);
+          setExpandedSteps(new Set([0])); // Auto-expand the config step
+        }
+      } catch (err) {
+        console.error('Failed to fetch config:', err);
+      }
+    };
+    fetchConfig();
+  }, []);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -191,6 +216,45 @@ export default function Home() {
   };
 
   const renderTraceData = (event: TraceEvent) => {
+    if (event.config) {
+      const config = event.config as {
+        model?: string;
+        provider?: string;
+        temperature?: number;
+        framework?: string;
+        tools?: { homeAssistant?: number; discogs?: number; arlo?: number; total?: number };
+        features?: string[];
+      };
+      return (
+        <div className="trace-data">
+          <div style={{ display: 'grid', gridTemplateColumns: 'auto 1fr', gap: '0.5rem 1rem', fontSize: '0.85rem' }}>
+            <span style={{ color: '#666' }}>Model:</span>
+            <span style={{ fontWeight: 500 }}>{config.model}</span>
+            <span style={{ color: '#666' }}>Provider:</span>
+            <span style={{ fontWeight: 500 }}>{config.provider}</span>
+            <span style={{ color: '#666' }}>Temperature:</span>
+            <span style={{ fontWeight: 500 }}>{config.temperature}</span>
+            <span style={{ color: '#666' }}>Framework:</span>
+            <span style={{ fontWeight: 500 }}>{config.framework}</span>
+            <span style={{ color: '#666' }}>Tools:</span>
+            <span style={{ fontWeight: 500 }}>
+              {config.tools?.total} total ({config.tools?.homeAssistant} HA, {config.tools?.discogs} Discogs, {config.tools?.arlo} Arlo)
+            </span>
+          </div>
+          {config.features && (
+            <div style={{ marginTop: '0.75rem' }}>
+              <span style={{ color: '#666', fontSize: '0.85rem' }}>Features:</span>
+              <ul style={{ margin: '0.25rem 0 0 1.25rem', fontSize: '0.85rem' }}>
+                {config.features.map((f, i) => (
+                  <li key={i}>{f}</li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
+      );
+    }
+
     if (event.messages) {
       return (
         <div className="trace-data">
