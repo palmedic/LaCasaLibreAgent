@@ -172,6 +172,11 @@ export const arloSetModeTool = tool(
   }
 );
 
+// Helper function to wait
+function sleep(ms: number): Promise<void> {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 // Tool 3: Take camera snapshot
 export const arloSnapshotTool = tool(
   async ({ camera_name }) => {
@@ -187,6 +192,7 @@ export const arloSnapshotTool = tool(
 
       // Find the specified camera or use the first one
       let targetCamera: string;
+      let cameraFriendlyName: string;
       if (camera_name) {
         const found = cameras.find(c =>
           c.entity_id.toLowerCase().includes(camera_name.toLowerCase()) ||
@@ -199,20 +205,35 @@ export const arloSnapshotTool = tool(
           });
         }
         targetCamera = found.entity_id;
+        cameraFriendlyName = found.friendly_name;
       } else {
         targetCamera = cameras[0].entity_id;
+        cameraFriendlyName = cameras[0].friendly_name;
       }
 
       console.log(`[arlo_snapshot] Requesting snapshot from ${targetCamera}`);
 
+      // Request a fresh snapshot
       await haClient.callService('aarlo', 'camera_request_snapshot', {
         entity_id: targetCamera,
       });
 
+      // Wait for the snapshot to be captured (Arlo cameras can take a few seconds)
+      console.log('[arlo_snapshot] Waiting for snapshot to be captured...');
+      await sleep(3000);
+
+      // Fetch the image from Home Assistant
+      console.log('[arlo_snapshot] Fetching image from camera proxy...');
+      const imageData = await haClient.getCameraImage(targetCamera);
+
+      console.log(`[arlo_snapshot] Image fetched successfully (${Math.round(imageData.length / 1024)}KB)`);
+
       return JSON.stringify({
         success: true,
         camera: targetCamera,
-        message: `Snapshot requested from ${targetCamera}. Check the camera entity for the latest image.`,
+        camera_name: cameraFriendlyName,
+        image: imageData,
+        message: `Snapshot captured from ${cameraFriendlyName}`,
       });
 
     } catch (error) {
@@ -227,9 +248,9 @@ export const arloSnapshotTool = tool(
   {
     name: 'arlo_snapshot',
     description:
-      'Request a snapshot from an Arlo camera. ' +
+      'Request a snapshot from an Arlo camera and return the image. ' +
       'Takes a current picture from the specified camera (or first available camera if not specified). ' +
-      'The snapshot will be available in the camera entity after capture.',
+      'Returns the image as base64 data that can be displayed.',
     schema: z.object({
       camera_name: z
         .string()

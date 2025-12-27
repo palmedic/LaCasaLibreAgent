@@ -7,6 +7,7 @@ import './globals.css';
 interface Message {
   role: 'user' | 'assistant';
   content: string;
+  images?: string[]; // Base64 image data URIs
 }
 
 interface TraceEvent {
@@ -36,6 +37,25 @@ function formatMessageContent(content: string): string {
   formatted = formatted.replace(/\n{3,}/g, '\n\n');
 
   return formatted;
+}
+
+// Extract images from tool results in trace events
+function extractImagesFromTrace(events: TraceEvent[]): string[] {
+  const images: string[] = [];
+
+  for (const event of events) {
+    if (event.type === 'TOOL_RESULT' && event.toolResult) {
+      const result = event.toolResult as Record<string, unknown>;
+      // Check if this is an arlo_snapshot result with an image
+      if (result.success && result.image && typeof result.image === 'string') {
+        if (result.image.startsWith('data:image')) {
+          images.push(result.image);
+        }
+      }
+    }
+  }
+
+  return images;
 }
 
 export default function Home() {
@@ -111,6 +131,7 @@ export default function Home() {
       }
 
       let buffer = '';
+      const collectedEvents: TraceEvent[] = []; // Collect events locally to extract images
 
       while (true) {
         const { done, value } = await reader.read();
@@ -131,15 +152,19 @@ export default function Home() {
                 setThreadId(data.threadId);
               }
 
-              // Add assistant response to messages
+              // Extract any images from the collected trace events
+              const images = extractImagesFromTrace(collectedEvents);
+
+              // Add assistant response to messages with any images
               setMessages((prev) => [
                 ...prev,
-                { role: 'assistant', content: data.reply },
+                { role: 'assistant', content: data.reply, images: images.length > 0 ? images : undefined },
               ]);
             } else if (data.type === 'ERROR') {
               throw new Error(data.error);
             } else {
-              // Regular trace event - add to trace in real-time
+              // Regular trace event - add to trace in real-time and collect locally
+              collectedEvents.push(data);
               setTrace((prev) => [...prev, data]);
             }
           }
@@ -240,6 +265,18 @@ export default function Home() {
               messages.map((msg, idx) => (
                 <div key={idx} className={`message ${msg.role}`}>
                   {formatMessageContent(msg.content)}
+                  {msg.images && msg.images.length > 0 && (
+                    <div className="message-images">
+                      {msg.images.map((img, imgIdx) => (
+                        <img
+                          key={imgIdx}
+                          src={img}
+                          alt={`Camera snapshot ${imgIdx + 1}`}
+                          className="message-image"
+                        />
+                      ))}
+                    </div>
+                  )}
                 </div>
               ))
             )}

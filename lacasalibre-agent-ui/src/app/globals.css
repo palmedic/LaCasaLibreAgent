@@ -122,6 +122,21 @@ body {
   border: 1px solid #e8e8e8;
 }
 
+/* Message images (camera snapshots, etc.) */
+.message-images {
+  margin-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.message-image {
+  max-width: 100%;
+  border-radius: 8px;
+  border: 1px solid #e8e8e8;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
 .trace-list {
   flex: 1;
   overflow-y: auto;

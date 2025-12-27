@@ -95,6 +95,34 @@ export class HomeAssistantClient {
 
     return response.json();
   }
+
+  async getCameraImage(entityId: string): Promise<string> {
+    // Use the camera proxy API to get the current image
+    const url = `${this.baseUrl}/api/camera_proxy/${entityId}`;
+
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${this.token}`,
+      },
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(
+        `Failed to get camera image for ${entityId}: ${response.status} ${response.statusText} - ${errorText}`
+      );
+    }
+
+    // Get the image as a buffer and convert to base64
+    const arrayBuffer = await response.arrayBuffer();
+    const base64 = Buffer.from(arrayBuffer).toString('base64');
+
+    // Get content type for proper data URI
+    const contentType = response.headers.get('content-type') || 'image/jpeg';
+
+    return `data:${contentType};base64,${base64}`;
+  }
 }
 
 export const haClient = new HomeAssistantClient();
