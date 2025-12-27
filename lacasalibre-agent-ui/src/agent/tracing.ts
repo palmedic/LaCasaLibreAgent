@@ -6,7 +6,8 @@ export type TraceEventType =
   | 'TOOL_CALL'
   | 'TOOL_RESULT'
   | 'ERROR'
-  | 'LLM_PROMPT';
+  | 'LLM_PROMPT'
+  | 'IMAGE';
 
 export interface TraceEvent {
   step: number;
@@ -18,6 +19,7 @@ export interface TraceEvent {
   toolResult?: unknown;
   error?: string;
   messages?: Array<{ role: string; content: string }>;
+  imageData?: string; // Base64 image data for IMAGE events
 }
 
 export class AgentTracer {

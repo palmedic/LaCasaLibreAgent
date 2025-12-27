@@ -12,7 +12,7 @@ interface Message {
 
 interface TraceEvent {
   step: number;
-  type: 'USER' | 'ASSISTANT' | 'TOOL_CALL' | 'TOOL_RESULT' | 'ERROR' | 'LLM_PROMPT';
+  type: 'USER' | 'ASSISTANT' | 'TOOL_CALL' | 'TOOL_RESULT' | 'ERROR' | 'LLM_PROMPT' | 'IMAGE';
   timestamp: string;
   content: string;
   toolName?: string;
@@ -20,6 +20,7 @@ interface TraceEvent {
   toolResult?: unknown;
   error?: string;
   messages?: Array<{ role: string; content: string }>;
+  imageData?: string; // Base64 image data for IMAGE events
 }
 
 // Format message content to fix numbered lists
@@ -39,28 +40,16 @@ function formatMessageContent(content: string): string {
   return formatted;
 }
 
-// Extract images from tool results in trace events
+// Extract images from IMAGE events in trace
 function extractImagesFromTrace(events: TraceEvent[]): string[] {
   const images: string[] = [];
 
   for (const event of events) {
-    if (event.type === 'TOOL_RESULT' && event.toolResult) {
-      const result = event.toolResult as Record<string, unknown>;
-      console.log('[extractImages] TOOL_RESULT event:', event.toolName);
-      console.log('[extractImages] result keys:', Object.keys(result));
-      console.log('[extractImages] result.success:', result.success);
-      console.log('[extractImages] has image:', 'image' in result);
-      console.log('[extractImages] image type:', typeof result.image);
-      if (result.image && typeof result.image === 'string') {
-        console.log('[extractImages] image starts with:', (result.image as string).substring(0, 30));
-      }
-      // Check if this is an arlo_snapshot result with an image
-      if (result.success && result.image && typeof result.image === 'string') {
-        if (result.image.startsWith('data:image')) {
-          console.log('[extractImages] Found image! Length:', (result.image as string).length);
-          images.push(result.image);
-        }
-      }
+    // Look for dedicated IMAGE events (more efficient - image not sent to LLM)
+    if (event.type === 'IMAGE' && event.imageData) {
+      console.log('[extractImages] Found IMAGE event from:', event.toolName);
+      console.log('[extractImages] Image length:', event.imageData.length);
+      images.push(event.imageData);
     }
   }
 

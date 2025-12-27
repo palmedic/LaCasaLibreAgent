@@ -237,14 +237,44 @@ export async function runAgentStreaming(
             const toolName = toolMsg.name || 'unknown';
             try {
               const parsedResult = JSON.parse(toolMsg.content);
-              onEvent({
-                step: stepCounter++,
-                type: 'TOOL_RESULT',
-                timestamp: new Date().toISOString(),
-                content: `Tool ${toolName} completed`,
-                toolName,
-                toolResult: parsedResult,
-              });
+
+              // Check if result contains image data - emit separately and strip from LLM context
+              if (parsedResult.image && typeof parsedResult.image === 'string' && parsedResult.image.startsWith('data:image')) {
+                // Emit IMAGE event with the actual image data
+                onEvent({
+                  step: stepCounter++,
+                  type: 'IMAGE',
+                  timestamp: new Date().toISOString(),
+                  content: `Image from ${toolName}`,
+                  toolName,
+                  imageData: parsedResult.image,
+                });
+
+                // Strip image from result for LLM (save tokens!)
+                const resultForLLM = { ...parsedResult, image: '[image captured and sent to UI]' };
+
+                // Update the tool message content to not include the full base64
+                (msg as { content: string }).content = JSON.stringify(resultForLLM);
+
+                // Emit TOOL_RESULT without the image data
+                onEvent({
+                  step: stepCounter++,
+                  type: 'TOOL_RESULT',
+                  timestamp: new Date().toISOString(),
+                  content: `Tool ${toolName} completed`,
+                  toolName,
+                  toolResult: resultForLLM,
+                });
+              } else {
+                onEvent({
+                  step: stepCounter++,
+                  type: 'TOOL_RESULT',
+                  timestamp: new Date().toISOString(),
+                  content: `Tool ${toolName} completed`,
+                  toolName,
+                  toolResult: parsedResult,
+                });
+              }
             } catch {
               onEvent({
                 step: stepCounter++,
