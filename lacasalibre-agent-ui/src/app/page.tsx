@@ -46,15 +46,25 @@ function extractImagesFromTrace(events: TraceEvent[]): string[] {
   for (const event of events) {
     if (event.type === 'TOOL_RESULT' && event.toolResult) {
       const result = event.toolResult as Record<string, unknown>;
+      console.log('[extractImages] TOOL_RESULT event:', event.toolName);
+      console.log('[extractImages] result keys:', Object.keys(result));
+      console.log('[extractImages] result.success:', result.success);
+      console.log('[extractImages] has image:', 'image' in result);
+      console.log('[extractImages] image type:', typeof result.image);
+      if (result.image && typeof result.image === 'string') {
+        console.log('[extractImages] image starts with:', (result.image as string).substring(0, 30));
+      }
       // Check if this is an arlo_snapshot result with an image
       if (result.success && result.image && typeof result.image === 'string') {
         if (result.image.startsWith('data:image')) {
+          console.log('[extractImages] Found image! Length:', (result.image as string).length);
           images.push(result.image);
         }
       }
     }
   }
 
+  console.log('[extractImages] Total images found:', images.length);
   return images;
 }
 
@@ -153,7 +163,12 @@ export default function Home() {
               }
 
               // Extract any images from the collected trace events
+              console.log('[DONE] Collected events count:', collectedEvents.length);
               const images = extractImagesFromTrace(collectedEvents);
+              console.log('[DONE] Images extracted:', images.length);
+              if (images.length > 0) {
+                console.log('[DONE] First image length:', images[0].length);
+              }
 
               // Add assistant response to messages with any images
               setMessages((prev) => [
@@ -262,23 +277,31 @@ export default function Home() {
                 />
               </div>
             ) : (
-              messages.map((msg, idx) => (
-                <div key={idx} className={`message ${msg.role}`}>
-                  {formatMessageContent(msg.content)}
-                  {msg.images && msg.images.length > 0 && (
-                    <div className="message-images">
-                      {msg.images.map((img, imgIdx) => (
-                        <img
-                          key={imgIdx}
-                          src={img}
-                          alt={`Camera snapshot ${imgIdx + 1}`}
-                          className="message-image"
-                        />
-                      ))}
-                    </div>
-                  )}
-                </div>
-              ))
+              messages.map((msg, idx) => {
+                if (msg.images && msg.images.length > 0) {
+                  console.log('[Render] Message', idx, 'has', msg.images.length, 'images');
+                  console.log('[Render] First image length:', msg.images[0].length);
+                }
+                return (
+                  <div key={idx} className={`message ${msg.role}`}>
+                    {formatMessageContent(msg.content)}
+                    {msg.images && msg.images.length > 0 && (
+                      <div className="message-images">
+                        {msg.images.map((img, imgIdx) => (
+                          <img
+                            key={imgIdx}
+                            src={img}
+                            alt={`Camera snapshot ${imgIdx + 1}`}
+                            className="message-image"
+                            onError={(e) => console.error('[Render] Image failed to load:', imgIdx, e)}
+                            onLoad={() => console.log('[Render] Image loaded successfully:', imgIdx)}
+                          />
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                );
+              })
             )}
             <div ref={messagesEndRef} />
           </div>
