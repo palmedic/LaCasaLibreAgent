@@ -46,9 +46,10 @@ function ensureSystemMessage(messages: BaseMessage[]): BaseMessage[] {
 const allTools = [...homeAssistantTools, ...discogsTools, ...arloTools];
 
 // Initialize the model with tools
+// Temperature 0.7 adds variety to Dr. House responses while keeping tool calls reliable
 const model = new ChatOpenAI({
   modelName: 'gpt-4o',
-  temperature: 0,
+  temperature: 0.7,
   openAIApiKey: env.OPENAI_API_KEY,
 }).bindTools(allTools);
 
