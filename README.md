@@ -8,6 +8,7 @@ A Home Assistant AI agent with Dr. House personality, built with Next.js, LangGr
 - **Entity Search**: Smart entity matching with synonyms and fuzzy search
 - **Real-Time Streaming**: Server-Sent Events for responsive chat experience
 - **Spotify Integration**: Play music on Home Assistant speakers with natural language
+- **Discogs Integration**: Search your vinyl collection and get music recommendations
 - **Entity Caching**: Fast access to 480+ Home Assistant entities
 
 ## Tech Stack
@@ -15,7 +16,7 @@ A Home Assistant AI agent with Dr. House personality, built with Next.js, LangGr
 - **Framework**: Next.js 15 (App Router)
 - **AI**: LangGraph + OpenAI GPT-4o
 - **Language**: TypeScript
-- **APIs**: Home Assistant REST API, Spotify Web API
+- **APIs**: Home Assistant REST API, Spotify Web API, Discogs API
 - **Deployment**: Vercel-ready
 
 ## Setup
@@ -43,6 +44,8 @@ Edit `.env` with your credentials:
 - `SPOTIFY_CLIENT_ID`: From [Spotify Developer Dashboard](https://developer.spotify.com/dashboard)
 - `SPOTIFY_CLIENT_SECRET`: From Spotify Developer Dashboard
 - `SPOTIFY_REDIRECT_URI`: Your callback URL (e.g., https://admin.lacasalibre.com/api/spotify/callback)
+- `DISCOGS_TOKEN`: Personal access token from [Discogs Developer Settings](https://www.discogs.com/settings/developers)
+- `DISCOGS_USERNAME`: Your Discogs username (for collection access)
 
 4. Run the development server:
 ```bash
@@ -53,13 +56,20 @@ npm run dev
 
 ## Available Tools
 
-The agent has access to 5 Home Assistant tools:
+The agent has access to these tools:
 
+### Home Assistant Tools
 1. **ha_smart_search** - Natural language entity search with synonyms
 2. **ha_list_entities** - List entities by domain/area
 3. **ha_get_entity_state** - Get detailed entity information
 4. **ha_call_service** - Execute Home Assistant services
 5. **ha_play_spotify** - Search Spotify and play music on speakers
+6. **ha_get_weather** - Get current weather and forecast
+
+### Discogs Tools
+7. **discogs_search_collection** - Search your personal vinyl record collection
+8. **discogs_search_database** - Search the global Discogs database for recommendations
+9. **discogs_get_release** - Get detailed information about a specific album
 
 ## Example Interactions
 
@@ -69,6 +79,9 @@ The agent has access to 5 Home Assistant tools:
 - "Play Coldplay in the bedroom"
 - "Is the front door locked?"
 - "Set the thermostat to 72 degrees"
+- "Do I have any Miles Davis records?"
+- "Recommend some bebop albums"
+- "What's the weather like?"
 
 ## Dr. House Personality
 
