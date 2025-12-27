@@ -9,6 +9,7 @@ A Home Assistant AI agent with Dr. House personality, built with Next.js, LangGr
 - **Real-Time Streaming**: Server-Sent Events for responsive chat experience
 - **Spotify Integration**: Play music on Home Assistant speakers with natural language
 - **Discogs Integration**: Search your vinyl collection and get music recommendations
+- **Arlo Security**: Control Arlo cameras, alarm modes, sirens, and recordings
 - **Entity Caching**: Fast access to 480+ Home Assistant entities
 
 ## Tech Stack
@@ -16,7 +17,7 @@ A Home Assistant AI agent with Dr. House personality, built with Next.js, LangGr
 - **Framework**: Next.js 15 (App Router)
 - **AI**: LangGraph + OpenAI GPT-4o
 - **Language**: TypeScript
-- **APIs**: Home Assistant REST API, Spotify Web API, Discogs API
+- **APIs**: Home Assistant REST API, Spotify Web API, Discogs API, Arlo (via aarlo)
 - **Deployment**: Vercel-ready
 
 ## Setup
@@ -71,6 +72,14 @@ The agent has access to these tools:
 8. **discogs_search_database** - Search the global Discogs database for recommendations
 9. **discogs_get_release** - Get detailed information about a specific album
 
+### Arlo Security Tools
+10. **arlo_get_status** - Get current status of alarm, cameras, and sensors
+11. **arlo_set_mode** - Set alarm mode (armed_away, armed_home, disarmed, custom modes)
+12. **arlo_snapshot** - Take a snapshot from any Arlo camera
+13. **arlo_recording** - Start or stop video recording on cameras
+14. **arlo_siren** - Activate or deactivate the Arlo siren
+15. **arlo_list_devices** - List all Arlo devices and their states
+
 ## Example Interactions
 
 - "Turn on the living room lights"
@@ -82,6 +91,9 @@ The agent has access to these tools:
 - "Do I have any Miles Davis records?"
 - "Recommend some bebop albums"
 - "What's the weather like?"
+- "Arm the security system"
+- "Is the Arlo alarm on?"
+- "Take a snapshot from the front door camera"
 
 ## Dr. House Personality
 

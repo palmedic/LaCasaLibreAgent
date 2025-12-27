@@ -4,6 +4,7 @@ import { ChatOpenAI } from '@langchain/openai';
 import { AIMessage, BaseMessage, SystemMessage } from '@langchain/core/messages';
 import { homeAssistantTools } from '@/tools/haTools';
 import { discogsTools } from '@/tools/discogsTools';
+import { arloTools } from '@/tools/arloTools';
 import { AgentTracer } from './tracing';
 import { validateEnv } from '@/config/env';
 import { HOUSE_SYSTEM_MESSAGE } from '@/config/houseContext';
@@ -42,7 +43,7 @@ function ensureSystemMessage(messages: BaseMessage[]): BaseMessage[] {
 }
 
 // Combine all tools
-const allTools = [...homeAssistantTools, ...discogsTools];
+const allTools = [...homeAssistantTools, ...discogsTools, ...arloTools];
 
 // Initialize the model with tools
 const model = new ChatOpenAI({
